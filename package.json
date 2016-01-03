@@ -1,0 +1,17 @@
+{
+  "name": "bibimbap",
+  "version": "0.0.1",
+  "description": "",
+  "main": "bibimbap.js",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "component-emitter": "^1.2.0",
+    "array-flatten": "^2.0.0",
+    "object-assign": "^4.0.1",
+    "is-plain-object": "^2.0.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
