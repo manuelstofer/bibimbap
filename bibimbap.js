@@ -93,14 +93,14 @@ proto.get = selectKeys(false, function() {
 /**
  * Get get only some attributes
  */
-proto.only = function(attributes) {
-  var attrs = flatten.from(arguments);
+proto.only = selectKeys(false, function(attributes) {
+  var attrs = flatten.from(attributes);
   var data  = this.get();
   return attrs.reduce(function(acc, attr) {
     acc[attr] = data[attr];
     return acc;
   }, {});
-};
+});
 
 /**
  * Map all items of the cursor

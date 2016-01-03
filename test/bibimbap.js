@@ -104,6 +104,25 @@ describe('Bibimbap', function() {
       });
     });
 
+    describe('only', function() {
+      it('omits keys', function() {
+        var state = new Bibimbap({
+          test: {
+            a: 1,
+            b: 2,
+            c: 3
+          }
+
+        });
+        var actual   = state.cursor().only('test', ['a', 'b']);
+        var expected = {
+          a: 1,
+          b: 2
+        };
+        assert.deepEqual(expected, actual);
+      });
+    });
+
     describe('set', function() {
       it('contains the tree structure', function() {
         var tree = {
