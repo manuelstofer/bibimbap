@@ -115,8 +115,8 @@ cursor, just on the current operation.
 
 ```js
 
-var nextCursor = cursor.set('first', 'second', 'value); // nextCursor has still the same location
-cursor.set(['first', 'second'], 'value);                // keys can also be in an array
+var nextCursor = cursor.set('first', 'second', 'value'); // nextCursor has still the same location
+cursor.set(['first', 'second'], 'value');                // keys can also be in an array
 
 ```
 # Get data
