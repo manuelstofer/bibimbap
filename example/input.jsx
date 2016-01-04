@@ -1,4 +1,3 @@
-/** @jsx element */
 import {element} from 'deku'
 
 export default {

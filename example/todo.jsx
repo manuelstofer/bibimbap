@@ -1,4 +1,3 @@
-/** @jsx element */
 import {element} from 'deku'
 import Input from './input.jsx'
 import './todo.css'

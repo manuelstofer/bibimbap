@@ -1,7 +1,6 @@
-/** @jsx element */
-import {element, dom} from 'deku'
-import Bibimbab from '../bibimbap.js'
-import Todo from './todo.jsx'
+let {element, dom} = require('deku');
+let Bibimbab       = require('../bibimbap.js');
+let Todo           = require('./todo.jsx').default;
 
 let state = new Bibimbab({ items: ['some', 'items'] });
 state.on('commit', rerender)
@@ -11,4 +10,11 @@ rerender();
 
 function rerender() {
   render(<Todo cursor={ state.cursor() }/>)
+}
+
+if (module.hot) {
+  module.hot.accept('./todo.jsx', function() {
+    Todo = require('./todo.jsx').default
+    rerender()
+  });
 }

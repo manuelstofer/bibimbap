@@ -14,9 +14,12 @@
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "css-loader": "^0.23.1",
+    "express": "^4.13.3",
     "is-plain-object": "^2.0.1",
     "style-loader": "^0.13.0",
-    "webpack": "^1.12.9"
+    "webpack": "^1.12.9",
+    "webpack-dev-middleware": "^1.4.0",
+    "webpack-hot-middleware": "^2.6.0"
   },
   "dependencies": {
     "deku": "^2.0.0-rc7"
