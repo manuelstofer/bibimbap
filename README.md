@@ -2,7 +2,7 @@
 
 Bibimbap is a simple JavaScript immutable tree data structure supporting cursors.
 It is inspired by [Baobab](https://github.com/Yomguithereal/baobab) but implements
-only a small subset of its features and is much lighter.
+only a small subset of its features. It's much lighter and also conceptually a bit different.
 
 It is intended to be used as a central data structure containing application state
 when using a library like [Deku](https://github.com/dekujs/deku) or react.
@@ -18,7 +18,7 @@ part of the global state.
 
 - Cursors are used to navigation through the tree. 
 - They are immutable, every operation returns a new cursor.
-- Cursors represent not only the location in a tree but also the state in time. 
+- Cursors represent not only the location in a tree but also state of the tree itself.
 - Commiting a previous cursor will revert the state.
 
 Unlike in Baobap cursors don't emit update events. The idea is to re-render the application and work with new cursors instead.
