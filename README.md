@@ -18,7 +18,7 @@ part of the global state.
 
 - Cursors are used to navigation through the tree. 
 - They are immutable, every operation returns a new cursor.
-- Cursors represent not only the location in a tree but also state of the tree itself.
+- Cursors represent not only the location in a tree but also the state of the tree itself.
 - Commiting a previous cursor will revert the state.
 
 Unlike in Baobap cursors don't emit update events. The idea is to re-render the application and work with new cursors instead.
