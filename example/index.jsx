@@ -1,5 +1,5 @@
 let {element, dom} = require('deku');
-let Bibimbab       = require('../bibimbap.js');
+let Bibimbab       = require('bibimbap');
 let Todo           = require('./todo.jsx').default;
 
 let state = new Bibimbab({ items: ['some', 'items'] });
