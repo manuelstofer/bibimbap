@@ -2,8 +2,9 @@
   "name": "example",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack-dev-server --hot --inline",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Manuel Stofer",
   "license": "MIT",
@@ -19,9 +20,11 @@
     "style-loader": "^0.13.0",
     "webpack": "^1.12.9",
     "webpack-dev-middleware": "^1.4.0",
+    "webpack-dev-server": "^1.14.0",
     "webpack-hot-middleware": "^2.6.0"
   },
   "dependencies": {
-    "deku": "^2.0.0-rc7"
+    "deku": "^2.0.0-rc7",
+    "bibimbap": "manuelstofer/bibimbap"
   }
 }

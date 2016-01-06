@@ -69,6 +69,13 @@ export default {
 }
 ```
 
+# Run Examples
+
+Install `example` specific dependencies, then run the build `npm` script.
+```bash
+$ cd example && npm i && npm start
+```
+
 # State
 
 Create new application state
