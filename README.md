@@ -84,9 +84,27 @@ Create new application state
 var state = new Bibimbap({ some: 'data' });
 ```
 
-#### state.cursor()
+# Cursors
 
-Create a cursor
+
+#### state.cursor(name)
+
+Create a cursor. Cursors can have an optional name.
+
+#### cursor.name(name)
+
+When the name is given it returns a new cursor with that name.
+Otherwise it will return name name of the cursor
+
+```
+cursor.name('hello').name(); // hello
+```
+
+The default name of a cursor is its keys.
+
+```
+state.cursor().select('first', 'second').name(); // "first.second"
+```
 
 #### state.commit(cursor)
 

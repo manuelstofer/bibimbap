@@ -26,16 +26,17 @@ Bibimbap.prototype.commit = function(cursor) {
 /**
  * Get a root cursor
  */
-Bibimbap.prototype.cursor = function() {
-  return new Cursor(this, this.tree, [], true);
+Bibimbap.prototype.cursor = function(name) {
+  return new Cursor(this, this.tree, name, [], true);
 };
 
 /**
  * Cursor allows to navigation on the tree and update data
  */
-function Cursor(bibimbap, tree, keys, autocommit) {
+function Cursor(bibimbap, tree, name, keys, autocommit) {
   this.bibimbap   = bibimbap;
   this.tree       = tree;
+  this.cursorName = name;
   this.keys       = keys instanceof Array ? keys : [keys];
   this.autocommit = autocommit;
   bindAll(this);
@@ -45,12 +46,24 @@ function Cursor(bibimbap, tree, keys, autocommit) {
  * Extend the cursor
  */
 function NextCursor(old, next) {
-  var cursor = new Cursor(old.bibimbap, old.tree, old.keys, old.autocommit);
+  var cursor = new Cursor(old.bibimbap, old.tree, old.cursorName, old.keys, old.autocommit);
   assign(cursor, next);
   return cursor;
 }
 
 var proto = Cursor.prototype;
+
+/**
+ * Set the name of a cursor
+ */
+proto.name = function(name) {
+  if (name) {
+    return NextCursor(this, {
+      cursorName: name
+    });
+  }
+  return this.cursorName || this.keys.join('.');
+};
 
 /**
  * Navigate down in the tree

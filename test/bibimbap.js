@@ -13,6 +13,23 @@ describe('Bibimbap', function() {
       assert.equal('changed', actual);
     });
 
+    describe('name', function() {
+      it('can have a name', function() {
+        var state = new Bibimbap();
+        assert.equal('name', state.cursor('name').name());
+      });
+
+      it('can create a cursor with a new name', function() {
+        var state = new Bibimbap();
+        assert.equal('new', state.cursor('old').name('new').name());
+      });
+
+      it('defaults to path', function() {
+        var state = new Bibimbap();
+        assert.equal('first.second.third', state.cursor().select('first', 'second').select('third').name());
+      });
+    });
+
     describe('select', function() {
       it('navigates down in tree', function() {
         var tree = {
