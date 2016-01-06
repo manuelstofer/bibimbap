@@ -16,7 +16,7 @@ And a Bibimbap is also a light Korean dish :)
 Cursors help you to write self-contained ui component that receive only their
 part of the global state.
 
-- Cursors are used to navigate through the tree. 
+- Cursors are used to navigate through the tree.
 - They are immutable, every operation returns a new cursor.
 - Cursors represent not only the location in a tree but also the state of the tree itself.
 - Commiting a previous cursor will revert the state.
@@ -25,7 +25,7 @@ Unlike in Baobap cursors don't emit update events. The idea is to re-render the 
 
 # Example
 
-A [todo](https://github.com/manuelstofer/bibimbap/tree/master/example) component implemented with Deku
+A [todo](https://github.com/manuelstofer/todo-bibimbap-deku) component implemented with Deku
 
 ```js
 import {element} from 'deku'
@@ -257,7 +257,7 @@ state.on('commit', function (tree, ) {
 });
 ```
 
-Output: 
+Output:
 ```
 { test: 'update 1' }
 { test: 'update 2' }
