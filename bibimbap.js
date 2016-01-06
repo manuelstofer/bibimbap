@@ -18,26 +18,49 @@ function Bibimbap(tree) {
  * Commit a cursor
  */
 Bibimbap.prototype.commit = function(cursor) {
-  var prev = this.tree;
-  this.tree = cursor.tree;
+  var operations = cursor.operations;
+  var prev       = this.tree;
+
+  // create a new tree with the operations applied
+  this.tree = runOperations(this.tree, cursor.operations);
+
+  // reset the cursors operations, as they are already
+  // applied to the tree
+  cursor.operations = [];
+
   this.emit('commit', this.tree, prev, cursor);
 };
+
+function runOperations(tree, operations) {
+  return operations.reduce(operationReducer, tree);
+}
+
+/**
+ * Retures new tree with the operation applied
+ */
+function operationReducer(tree, op) {
+  return attach(
+    tree,
+    op.keys,
+    op.fn(get(tree, op.keys), op.keys)
+  );
+}
 
 /**
  * Get a root cursor
  */
 Bibimbap.prototype.cursor = function(name) {
-  return new Cursor(this, this.tree, name, [], true);
+  return new Cursor(this, name, [], [], true);
 };
 
 /**
  * Cursor allows to navigation on the tree and update data
  */
-function Cursor(bibimbap, tree, name, keys, autocommit) {
+function Cursor(bibimbap, name, keys, operations, autocommit) {
   this.bibimbap   = bibimbap;
-  this.tree       = tree;
   this.cursorName = name;
   this.keys       = keys instanceof Array ? keys : [keys];
+  this.operations = operations || [];
   this.autocommit = autocommit;
   bindAll(this);
 }
@@ -46,7 +69,13 @@ function Cursor(bibimbap, tree, name, keys, autocommit) {
  * Extend the cursor
  */
 function NextCursor(old, next) {
-  var cursor = new Cursor(old.bibimbap, old.tree, old.cursorName, old.keys, old.autocommit);
+  var cursor = new Cursor(
+    old.bibimbap,
+    old.cursorName,
+    old.keys,
+    old.operations,
+    old.autocommit
+  );
   assign(cursor, next);
   return cursor;
 }
@@ -62,14 +91,14 @@ proto.name = function(name) {
       cursorName: name
     });
   }
-  return this.cursorName || this.keys.join('.');
+  return this.cursorName || path(this.keys);
 };
 
 /**
  * Navigate down in the tree
  */
 proto.select = function(keys) {
-  if (typeof keys == 'undefined') return this;
+  if (keys === undefined) return this;
   var newKeys = flatten.from(arguments).map(toKey);
   return NextCursor(this, {
     keys: this.keys.concat(newKeys)
@@ -98,10 +127,16 @@ proto.up = function() {
  * Get the data stored in the tree
  */
 proto.get = selectKeys(false, function() {
-  return this.keys.reduce(function(tree, key) {
-    return (tree || {})[key];
-  }, this.tree);
+  var tree    = this.bibimbap.tree;
+  var current = runOperations(tree, this.operations);
+  return get(current, this.keys);
 });
+
+function get(tree, keys) {
+  return keys.reduce(function(tree, key) {
+    return (tree || {})[key];
+  }, tree);
+}
 
 /**
  * Get get only some attributes
@@ -127,18 +162,17 @@ proto.map = selectKeys(false, function(callback) {
 });
 
 /**
- * Update the data
- * - does not mutate the tree
- * - commits data to Bibimbap (unless in transaction)
+ * Test if data for the cursor exists
  */
-proto.set = selectKeys(true, function(value) {
-  var next = NextCursor(this, {
-    tree: attach(this.bibimbap.tree, this.keys, value)
-  });
-  if (next.autocommit) {
-    next.commit();
-  }
-  return next;
+proto.exists = proto.has = function() {
+  return this.get.apply(this, arguments) !== undefined;
+};
+
+/**
+ * Update the data
+ */
+proto.set = operator(function(value, tree) {
+  return value;
 });
 
 /**
@@ -156,58 +190,64 @@ proto.setter = function() {
 };
 
 /**
- * Add an item to an array
+ * Extend with additional keys
  */
-proto.push = selectKeys(true, function(item) {
-  var next = (this.get() || []).slice(0);
-  next.push(item);
-  return this.set(next);
+proto.assign = operator(function(obj, tree) {
+  return assign({}, obj, tree);
 });
 
 /**
  * Add an item to an array
  */
-proto.unshift = selectKeys(true, function(item) {
-  var next = (this.get() || []).slice(0);
+proto.push = operator(function(item, array) {
+  var next = (array || []).slice(0);
+  next.push(item);
+  return next;
+});
+
+/**
+ * Add an item to an array
+ */
+proto.unshift = operator(function(item, array) {
+  var next = (array || []).slice(0);
   next.unshift(item);
-  return this.set(next);
+  return next;
 });
 
 /**
  * Remove data
  */
+proto.remove = operator(function(key, tree, keys) {
+  key = toKey(key);
+  if (tree === undefined) {
+    throw new Error('Can not remove not existing node: ' + path(keys.concat(key)))
+  }
+  if (typeof key === 'number') {
+    return tree.slice(0, key).concat(tree.slice(key + 1));
+  }
+  var next = clone(tree);
+  delete next[key];
+  return next;
+});
+
+/**
+ * Convenience method to remove an item
+ * usefull for attaching it to an event handler
+ * where it would receive an additional dom event
+ */
 proto.remover = function() {
-  var obj = this.up().get();
-  var key = this.keys[this.keys.length - 1];
-
-  if (typeof this.get() === 'undefined') {
-    return this;
-  }
-  if (this.keys.length === 0) {
-    return this.set(undefined);
-  }
-  if (obj instanceof Array) {
-    return this.up().set(obj.slice(0, key).concat(obj.slice(key + 1)));
-  }
-  obj = clone(obj);
-  delete obj[key];
-  return this.up().set(obj);
-};
-
-proto.remove = selectKeys(true, proto.remover);
-
-/**
- * Test if data for the cursor exists
- */
-proto.exists = proto.has = function() {
-  return typeof this.get.apply(this, arguments) !== 'undefined';
+  this.up().remove(this.keys[this.keys.length - 1]);
 };
 
 /**
- * Extend with additional keys
+ * Process a value
+ * usage:
+ *  cursor.process(function inc(n) {
+ *    return n + 1
+ *  });
  */
-proto.assign = selectKeys(true, function(obj) {
-  return this.set(assign({}, this.get(), obj));
+proto.process = operator(function(fn, tree) {
+  return fn(tree);
 });
 
 /**
@@ -220,23 +260,31 @@ proto.transaction = function() {
 };
 
 /**
- * Commit the transaction
+ * Commit the transactions in a cursor
  */
 proto.commit = function() {
   this.bibimbap.commit(this);
 };
 
 /**
- * Process a value (fast forward to state)
- * usage:
- *  cursor.process(function inc(n) {
- *    return n + 1
- *  });
+ * Internal helper method to create operators
  */
-proto.process = selectKeys(true, function(processor) {
-  var cursor = this.bibimbap.cursor().select(this.keys);
-  return this.set(processor(cursor.get()));
-});
+function operator(operator) {
+  return selectKeys(true, function(value) {
+    var next = NextCursor(this, {
+      operations: this.operations
+        .concat({
+          keys: this.keys,
+          fn:   operator.bind(null, value)
+        })
+    });
+    if (next.autocommit) {
+      next.commit();
+    }
+
+    return next;
+  });
+}
 
 /**
  * Internal helper method to create function that
@@ -244,10 +292,14 @@ proto.process = selectKeys(true, function(processor) {
  * For example
  *  cursor.set('key', 'value')
  */
-function selectKeys(reset, fn) {
+function selectKeys(reset, nArgs, fn) {
+  if (typeof nArgs === 'function') {
+    fn    = nArgs;
+    nArgs = fn.length;
+  }
   return function() {
     var cursor = this;
-    var nKeys  = arguments.length - fn.length;
+    var nKeys  = arguments.length - nArgs;
     var args   = [].slice.call(arguments, nKeys);
     var keys   = [].slice.call(arguments, 0, nKeys);
     var cursor = this.select.apply(this, keys);
@@ -271,6 +323,9 @@ function attach(tree, keys, value) {
     next = typeof key === 'number' ? [] : {};
   }
   next[key] = attach((tree || {})[key], keys.slice(1), value);
+  if (next[key] === undefined) {
+    delete next[key];
+  }
   return next;
 }
 
@@ -300,13 +355,6 @@ function bindAll(obj) {
 }
 
 /**
- * Capitalize a string
- */
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-/**
  * Valid keys are strings and numbers
  * converts '3' to 3
  */
@@ -318,4 +366,11 @@ function toKey(key) {
     return parseInt(key, 10);
   }
   return key;
+}
+
+/**
+ * Joins the keys to a human readable path
+ */
+function path(keys) {
+  return keys.join('.');
 }

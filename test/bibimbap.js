@@ -139,14 +139,6 @@ describe('Bibimbap', function() {
     });
 
     describe('set', function() {
-      it('contains the tree structure', function() {
-        var tree = {
-          test: 'bla'
-        };
-        var state = new Bibimbap(tree);
-        assert.equal(tree, state.cursor().tree);
-      });
-
       it('does autocommit', function(done) {
         var state = new Bibimbap({
           test: 'original'
@@ -332,21 +324,19 @@ describe('Bibimbap', function() {
         assert.equal(1, actual.length);
       });
 
-      it('root', function() {
-        var state  = new Bibimbap([1, 2]);
-        var actual = state.cursor().remove().get();
-        assert.deepEqual('undefined', typeof actual);
-      });
-
-      it('not existing', function() {
-        var state  = new Bibimbap();
-        var actual = state.cursor().remove('bla', 'bla').get();
-        assert.deepEqual('undefined', typeof actual);
+      it('can not remove at not existing node', function() {
+        var state = new Bibimbap();
+        try {
+          var actual = state.cursor().remove('bla', 'bla').get();
+        } catch ( e ) {
+          return;
+        }
+        assert.fail();
       });
     });
 
     describe('assign', function() {
-      it('works like assign, but is immutable', function() {
+      it('works like assign', function() {
         var state = new Bibimbap({
           test: {
             key: 'value'
