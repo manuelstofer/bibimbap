@@ -113,9 +113,7 @@ describe('Bibimbap', function() {
       });
 
       it('can also get the tree root', function() {
-        var tree = {
-          test: 'bla'
-        };
+        var tree  = {};
         var state = new Bibimbap(tree);
         assert.strictEqual(tree, state.cursor().get());
       });
@@ -255,17 +253,6 @@ describe('Bibimbap', function() {
         var cursor = state.cursor().set('test', 'updated');
         assert.equal(0, cursor.keys.length);
       });
-
-      it('discards changes when using an old cursor', function() {
-        var state  = new Bibimbap({});
-        var cursor = state.cursor();
-        cursor.set('hello', 'bla');
-        var actual   = cursor.set('test', 'update').get();
-        var expected = {
-          test: 'update'
-        };
-        assert.deepEqual(expected, actual);
-      });
     });
 
     describe('setter', function() {
@@ -293,7 +280,7 @@ describe('Bibimbap', function() {
     });
 
     describe('process', function() {
-      it('updates at the latest state', function() {
+      it('applies a function to state', function() {
         var state  = new Bibimbap(0);
         var cursor = state.cursor();
         var inc    = function(n) {
@@ -301,22 +288,6 @@ describe('Bibimbap', function() {
         };
         cursor.process(inc);
         assert.equal(2, cursor.process(inc).get());
-      });
-    });
-
-    describe('latest', function() {
-      it('fast forwards to the latest state', function() {
-        var state  = new Bibimbap({});
-        var cursor = state.cursor();
-        cursor.set('test', 1);
-        var actual = cursor.latest()
-          .set('bla', 2)
-          .get();
-        var expected = {
-          test: 1,
-          bla:  2
-        };
-        assert.deepEqual(expected, actual);
       });
     });
 
@@ -393,6 +364,16 @@ describe('Bibimbap', function() {
           }
         };
         assert.deepEqual(expected, actual);
+      });
+    });
+
+    describe('transaction', function() {
+      it('always applies changes to the latest state', function() {
+        var state = new Bibimbap({});
+        state.cursor().set('test1', 'value1');
+        var cursor = state.cursor().set('test2', 'value2');
+        assert.equal('value1', cursor.get('test1'));
+        assert.equal('value2', cursor.get('test2'));
       });
     });
   });

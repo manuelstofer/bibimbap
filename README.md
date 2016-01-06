@@ -18,8 +18,6 @@ part of the global state.
 
 - Cursors are used to navigate through the tree.
 - They are immutable, every operation returns a new cursor.
-- Cursors represent not only the location in a tree but also the state of the tree itself.
-- Commiting a previous cursor will revert the state.
 
 Unlike in Baobap cursors don't emit update events. The idea is to re-render the application and work with new cursors instead.
 
@@ -251,37 +249,5 @@ cursor.transaction()
   .set('test', 5)
   .commit()
 ```
-
-#### cursor.commit()
-
-Commit the cursor back to the state. This will exchange the state tree
-regardless if the cursor is in an transaction or not.
-
-Can be used to roll back to an old state.
-
-```js
-var Bibimbap = require('bibimbap');
-var state = new Bibimbap({ test: 'original' });
-var cursor = state.cursor();
-cursor.select('test')
-  .set('updated 1');    // cursors autocommit unless you start a .transaction()
-  .set('updated 2');
-
-state.commit(cursor);   // will revert the state to the original cursor
-
-// only the central state emits events
-state.on('commit', function (tree, ) {
-  console.log(tree)
-});
-```
-
-Output:
-```
-{ test: 'update 1' }
-{ test: 'update 2' }
-{ test: 'original' }
-```
-
-
 
 

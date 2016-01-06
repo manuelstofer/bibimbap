@@ -132,13 +132,13 @@ proto.map = selectKeys(false, function(callback) {
  * - commits data to Bibimbap (unless in transaction)
  */
 proto.set = selectKeys(true, function(value) {
-  var cursor = NextCursor(this, {
-    tree: attach(this.tree, this.keys, value)
+  var next = NextCursor(this, {
+    tree: attach(this.bibimbap.tree, this.keys, value)
   });
-  if (cursor.autocommit) {
-    cursor.commit();
+  if (next.autocommit) {
+    next.commit();
   }
-  return cursor;
+  return next;
 });
 
 /**
@@ -227,24 +227,16 @@ proto.commit = function() {
 };
 
 /**
- * Process a value (fast forward to latest state)
+ * Process a value (fast forward to state)
  * usage:
  *  cursor.process(function inc(n) {
  *    return n + 1
  *  });
  */
 proto.process = selectKeys(true, function(processor) {
-  return this.set(processor(this.latest().get()));
+  var cursor = this.bibimbap.cursor().select(this.keys);
+  return this.set(processor(cursor.get()));
 });
-
-/**
- * Fast forward the cursor to the latest state
- * - use carefully
- * - when possible use process instead
- */
-proto.latest = function() {
-  return this.bibimbap.cursor().select(this.keys);
-};
 
 /**
  * Internal helper method to create function that
