@@ -355,6 +355,17 @@ describe('Bibimbap', function() {
         };
         assert.deepEqual(expected, actual);
       });
+
+      it('overwrites keys', function() {
+        var state  = new Bibimbap({});
+        var cursor = state.cursor();
+
+        cursor.set('test', true);
+        assert.equal(false, cursor.assign({
+          test: false
+        }).get().test);
+      });
+
     });
 
     describe('transaction', function() {

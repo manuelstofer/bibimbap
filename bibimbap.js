@@ -193,7 +193,7 @@ proto.setter = function() {
  * Extend with additional keys
  */
 proto.assign = operator(function(obj, tree) {
-  return assign({}, obj, tree);
+  return assign({}, tree, obj);
 });
 
 /**
