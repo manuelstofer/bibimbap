@@ -18,8 +18,7 @@ function Bibimbap(tree) {
  * Commit a cursor
  */
 Bibimbap.prototype.commit = function(cursor) {
-  var operations = cursor.operations;
-  var prev       = this.tree;
+  var prev = this.tree;
 
   // create a new tree with the operations applied
   this.tree = runOperations(this.tree, cursor.operations);
