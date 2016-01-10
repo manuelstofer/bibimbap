@@ -1,0 +1,28 @@
+{
+  "preset": "default",
+  "plugins": [
+    "esformatter-var-each",
+    "esformatter-semicolons",
+    "esformatter-quotes",
+    "esformatter-jsx",
+    "esformatter-eol-last",
+    "esformatter-align",
+    "esformatter-limit-linebreaks"
+  ],
+  "quotes": {
+    "type": "single",
+    "avoidEscape": true
+  },
+  "LimitLineBreaks": 2,
+  "jsx": {
+    "formatJSX": true,
+    "attrsOnSameLineAsTag": false,
+    "maxAttrsOnTag": 4,
+    "firstAttributeOnSameLine": true,
+    "alignWithFirstAttribute": true,
+    "spaceInJSXExpressionContainers": " ",
+    "formatJSXExpressions": false,
+    "htmlOptions": {
+    }
+  }
+}
