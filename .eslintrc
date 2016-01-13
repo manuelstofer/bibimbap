@@ -8,7 +8,6 @@
     "comma-style": [2, "last"],
     "curly": [2, "multi-line"],
     "default-case": 2,
-    "func-style": [2, "declaration"],
     "guard-for-in": 0,
     "new-cap": 0,
     "no-delete-var": 2,
@@ -18,7 +17,7 @@
     "no-nested-ternary": 2,
     "no-sequences": 0,
     "no-shadow": 0,
-    "no-unused-vars": [2, {"vars": "all", "args": "after-used"}],
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
     "no-var": 0,
     "quotes": [1, "single", "avoid-escape"],
     "radix": 2,
@@ -28,5 +27,9 @@
     "spaced-comment": [2, "always", { "exceptions": ["-"]}],
     "strict": 0,
     "valid-jsdoc": [0, { "prefer": { "return": "returns"}}]
+  },
+  "globals": {
+    "describe": true,
+    "it": true
   }
 }

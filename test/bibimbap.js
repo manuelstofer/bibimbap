@@ -327,8 +327,8 @@ describe('Bibimbap', function() {
       it('can not remove at not existing node', function() {
         var state = new Bibimbap();
         try {
-          var actual = state.cursor().remove('bla', 'bla').get();
-        } catch ( e ) {
+          state.cursor().remove('bla', 'bla').get();
+        } catch (e) {
           return;
         }
         assert.fail();
