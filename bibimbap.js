@@ -1,3 +1,5 @@
+'use strict';
+
 var emitter       = require('component-emitter');
 var assign        = require('object-assign');
 var flatten       = require('array-flatten');
@@ -297,7 +299,6 @@ function selectKeys(reset, nArgs, fn) {
     nArgs = fn.length;
   }
   return function() {
-    var cursor = this;
     var nKeys  = arguments.length - nArgs;
     var args   = [].slice.call(arguments, nKeys);
     var keys   = [].slice.call(arguments, 0, nKeys);
