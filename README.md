@@ -17,9 +17,9 @@ Cursors help you to write self-contained ui component that receive only their
 part of the global state.
 
 - Cursors are used to navigate through the tree.
-- They are immutable, every operation returns a new cursor.
+- They are also immutable, every operation returns a new cursor.
 
-Unlike in Baobap cursors don't emit update events. The idea is to re-render the application and work with new cursors instead.
+Unlike in Baobap cursors don't emit update events. The idea is to re-render everything with the next version of the state.
 
 # Example
 
