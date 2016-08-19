@@ -26,52 +26,47 @@ Unlike in Baobap cursors don't emit update events. The idea is to re-render ever
 A [todo](https://github.com/manuelstofer/todo-bibimbap-deku) component implemented with Deku
 
 ```js
-import {element} from 'deku'
-import Input from './input.jsx'
-import './todo.css'
+import { element } from 'deku';
+import Input from './input.jsx';
+import './todo.css';
 
+/**
+ * Todo Component
+ */
 export default {
-  render: ({ props }) => {
+  render({props: {cursor}}) {
 
-    let {cursor} = props;
-    let canAdd   = cursor.get('did-change');
+    // generates the list of items
+    const items = cursor.select('items')
+      .map(cursor => {
+        return <li>
+                 { cursor.get() } <span onClick={ cursor.remover }>✖</span>
+               </li>;
+      });
 
-    let items = cursor.map('items', (cursor) => {
-      return (
-        <li>
-          { cursor.get() } <span onClick={ cursor.remover } >✖</span>
-        </li>
-      );
-    });
+    return <div class="todo">
+             <form onSubmit={ addItem }>
+               <ul>
+                 { items }
+               </ul>
+               <Input cursor={ cursor } name="new-item" type="text" />
+               <button type="submit" disabled={ !cursor.get('new-item') }>
+                 Add
+               </button>
+             </form>
+           </div>;
 
-    return (
-      <div class="todo">
-        <form onSubmit={ addItem } >
-          <ul>{ items }</ul>
-          <Input cursor={ cursor } name="new-item" type="text" />
-          <button type="submit" disabled={ !canAdd }>
-            Add
-          </button>
-        </form>
-      </div>
-    );
-
+    /**
+     * Action to add a item to the list
+     */
     function addItem(ev) {
       ev.preventDefault();
       cursor
-        .push('items',cursor.get('new-item'))
-        .set('did-change', false)
-        .set('new-item', '')
+        .push('items', cursor.get('new-item'))
+        .set('new-item', '');
     }
   }
 }
-```
-
-# Run Examples
-
-Install `example` specific dependencies, then run the build `npm` script.
-```bash
-$ cd example && npm i && npm start
 ```
 
 # State
