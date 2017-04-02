@@ -6,7 +6,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "component-emitter": "^1.2.0",
     "array-flatten": "^2.0.0",
     "object-assign": "^4.0.1",
     "is-plain-object": "^2.0.1"

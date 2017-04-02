@@ -143,7 +143,7 @@ describe('Bibimbap', function() {
         var state = new Bibimbap({
           test: 'original'
         });
-        state.on('commit', function(tree, prev, cursor) {
+        state.subscribe(function(tree, prev, cursor) {
           assert.equal('hello', tree.test);
           assert.equal('hello', cursor.get());
           assert.equal('original', prev.test);
@@ -156,7 +156,7 @@ describe('Bibimbap', function() {
         var state = new Bibimbap({
           test: 'original'
         });
-        state.on('commit', function(tree, prev, cursor) {
+        state.subscribe(function(tree, prev, cursor) {
           assert.equal('second', tree.test);
           assert.equal('second', cursor.get());
           assert.equal('original', prev.test);
