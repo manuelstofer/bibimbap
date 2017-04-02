@@ -3,6 +3,10 @@
   "version": "0.1.4",
   "description": "",
   "main": "bibimbap.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manuelstofer/bibimbap.git"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
