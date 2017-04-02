@@ -1,6 +1,5 @@
 'use strict';
 
-var emitter       = require('component-emitter');
 var assign        = require('object-assign');
 var flatten       = require('array-flatten');
 var isPlainObject = require('is-plain-object');
@@ -12,9 +11,36 @@ module.exports = Bibimbap;
  */
 function Bibimbap(tree) {
   if (!(this instanceof Bibimbap)) return new Bibimbap(tree);
-  emitter(this);
   this.tree = tree;
+  this.listeners = [];
 }
+
+/**
+ * Subscribe to state changes
+ */
+Bibimbap.prototype.subscribe = function(listener) {
+  this.listeners.push(listener);
+  var isSubscribed = true;
+
+  return function unsubscribe() {
+    if (!isSubscribed) {
+      return;
+    }
+
+    isSubscribed = false;
+    var index = this.listeners.indexOf(listener);
+    this.listeners.splice(index, 1);
+  }
+};
+
+/**
+ * Publish a state change
+ */
+Bibimbap.prototype.publishCommit = function(tree, prev, cursor) {
+  this.listeners.slice().forEach(function(listener) {
+    listener(tree, prev, cursor);
+  });
+};
 
 /**
  * Commit a cursor
@@ -29,7 +55,7 @@ Bibimbap.prototype.commit = function(cursor) {
   // applied to the tree
   cursor.operations = [];
 
-  this.emit('commit', this.tree, prev, cursor);
+  this.publishCommit(this.tree, prev, cursor);
 };
 
 function runOperations(tree, operations) {
